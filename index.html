@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A-Frame Basic Laser Control Example</title>
+    <meta name="description" content="Laser Controls">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+</head>
+<body>
+
+<!-- the "cursor" bit here makes it so the mouse can click objects, when not in VR mode. -->
+<a-scene cursor="rayOrigin:mouse" webxr="referenceSpaceType: local">
+    <a-assets>
+        <img id="groundTexture" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
+    </a-assets>
+
+    <a-text value="Hello World" position="-1.5 4 -5" color="#000" scale="1.5 1.5 1.5"></a-text>
+    <a-text value="Apply a new color on walls by click the colored cubes." position="-1.5 3.5 -5"
+            color="#000"></a-text>
+
+    <a-box class="selectable" position="-3 1 -5" rotation="0 90 30" scale="" color="#F44336"
+           intersect-color-change>>
+    </a-box>
+    <a-box class="selectable" position="-1 2 -5" rotation="0 45 45" scale="0.75 0.75 0.75" color="#2196F3"
+           intersect-color-change>>
+    </a-box>
+    <a-box class="selectable" position="2 2 -4" rotation="0 45 30" scale="0.75 0.75 0.75" color="#009688"
+           intersect-color-change>>
+    </a-box>
+    <a-box class="selectable" position="1 1 -5" rotation="0 70 30" scale="0.9 0.9 0.9" color="#E91E63"
+           intersect-color-change>
+    </a-box>
+
+    <a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: a-box"></a-entity>
+    <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: a-box" line="color: yellow"></a-entity>
+
+    <a-sky id="bg" color="#fff"></a-sky>
+
+    <a-plane src="#groundTexture" rotation="-90 0 0" width="50" height="50"></a-plane>
+
+</a-scene>
+
+<script>
+    // src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"
+    // otherwise, add event-set__enter script such as event-set__enter="_event: mouseup; _target: #bg; color: #E91E63"
+    AFRAME.registerComponent('intersect-color-change', {
+        init: function () {
+            let element = this.el;
+            let material = element.getAttribute('material');
+            let initialColor = material.color;
+            let self = this;
+            let sky = document.querySelector('#bg')
+
+            element.addEventListener('mousedown', function (evt) {
+                element.setAttribute('material', 'color', '#EF2D5E');
+            });
+
+            element.addEventListener('mouseup', function (evt) {
+                element.setAttribute('material', 'color', self.isMouseEnter ? '#24CAFF' : initialColor);
+                if (self.isMouseEnter) {
+                    sky.setAttribute('material', 'color', initialColor);
+                }
+            });
+
+            element.addEventListener('mouseenter', function () {
+                element.setAttribute('material', 'color', '#24CAFF');
+                self.isMouseEnter = true;
+            });
+
+            element.addEventListener('mouseleave', function () {
+                element.setAttribute('material', 'color', initialColor);
+                self.isMouseEnter = false;
+            });
+        }
+    });
+</script>
+</body>
+</html>
